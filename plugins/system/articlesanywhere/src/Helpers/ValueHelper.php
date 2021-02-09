@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -42,11 +42,11 @@ class ValueHelper
 
 		if (strpos($value, ' to ') !== false)
 		{
-			$value = explode(' to ', $value, 2);
+			$value    = explode(' to ', $value, 2);
 			$value[0] = RL_RegEx::replace('^from ', '', $value[0]);
 
-			$from  = self::placeholderToDate($value[0], $apply_offset) ?: $value[0];
-			$to    = self::placeholderToDate($value[1], $apply_offset) ?: $value[1];
+			$from = self::placeholderToDate($value[0], $apply_offset) ?: $value[0];
+			$to   = self::placeholderToDate($value[1], $apply_offset) ?: $value[1];
 
 			if ( ! $from || ! $to)
 			{
@@ -96,7 +96,7 @@ class ValueHelper
 
 		if (strpos($value, ' to ') !== false)
 		{
-			$value = explode(' to ', $value, 2);
+			$value    = explode(' to ', $value, 2);
 			$value[0] = RL_RegEx::replace('^from ', '', $value[0]);
 
 			return self::isDateValue($value[0]) && self::isDateValue($value[1]);

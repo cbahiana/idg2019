@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<metafile version="3.9.18" client="administrator">
+<metafile version="3.9" client="administrator">
 	<name>Brazilian Portuguese (pt-BR)</name>
-	<version>3.9.18.1</version>
-	<creationDate>2020-04-22</creationDate>
+	<version>3.9.21.1</version>
+	<creationDate>Setembro de 2020</creationDate>
 	<author>Projeto Joomla!</author>
 	<authorEmail>helvecio.dasilva@community.joomla.org</authorEmail>
-	<authorUrl>http://brasil.joomla.com</authorUrl>
+	<authorUrl>www.joomla.org</authorUrl>
 	<copyright>Copyright (C) 2005-2020 Open Source Matters. Todos os direitos reservados.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<description><![CDATA[Brazilian Portuguese Administrator language]]></description>

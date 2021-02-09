@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -15,7 +15,7 @@ require_once __DIR__ . '/script.install.helper.php';
 
 class PlgEditorsXtdArticlesAnywhereInstallerScript extends PlgEditorsXtdArticlesAnywhereInstallerScriptHelper
 {
-	public $name           = 'ARTICLES_ANYWHERE';
+	public $name           = 'ARTICLESANYWHERE';
 	public $alias          = 'articlesanywhere';
 	public $extension_type = 'plugin';
 	public $plugin_folder  = 'editors-xtd';

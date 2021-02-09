@@ -10,7 +10,6 @@ namespace Joomla\CMS\Form;
 
 defined('JPATH_PLATFORM') or die;
 
-use Joomla\CMS\Form\Factory\LegacyFormFactory;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
@@ -1563,6 +1562,18 @@ class Form
 				{
 					$field   = $this->loadField($element);
 					$subForm = $field->loadSubForm();
+
+					// Subform field may have a default value, that is a JSON string
+					if ($value && is_string($value))
+					{
+						$value = json_decode($value, true);
+
+						// The string is invalid json
+						if (!$value)
+						{
+							return null;
+						}
+					}
 
 					if ($field->multiple)
 					{

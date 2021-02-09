@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -219,8 +219,9 @@ class PlgButtonArticlesAnywherePopup
 				->join('LEFT', '#__users AS v ON v.id = c.created_by')
 				->join('LEFT', '#__content_frontpage AS f ON f.content_id = c.id')
 				->where($where)
-				->order($order);
-			$db->setQuery($query, $page->limitstart, $page->limit);
+				->order($order)
+				->setLimit($page->limit, $page->limitstart);
+			$db->setQuery($query);
 			$rows = $db->loadObjectList();
 
 			// If there is a database query error, throw a HTTP 500 and exit
@@ -275,7 +276,7 @@ class PlgButtonArticlesAnywherePopup
 				<div class="btn-toolbar" id="toolbar">
 					<div class="btn-wrapper" id="toolbar-options">
 						<button
-								onclick="window.open('index.php?option=com_plugins&filter_folder=system&filter_search=<?php echo JText::_('ARTICLES_ANYWHERE') ?>');"
+								onclick="window.open('index.php?option=com_plugins&filter_folder=system&filter_search=<?php echo JText::_('ARTICLESANYWHERE') ?>');"
 								class="btn btn-small">
 							<span class="icon-options"></span> <?php echo JText::_('JOPTIONS') ?>
 						</button>

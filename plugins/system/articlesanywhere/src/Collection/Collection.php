@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -103,6 +103,30 @@ class Collection extends CollectionObject
 
 		$this->setIgnores($query);
 
+		if ($this->config->getFilters('one_per_category'))
+		{
+			$query->select($this->db->quoteName('items.catid'));
+
+			$ids = [];
+
+			foreach (DB::getResults($query, 'loadObjectList') as $item)
+			{
+				if (isset($ids[$item->catid]))
+				{
+					continue;
+				}
+
+				$ids[$item->catid] = $item->id;
+			}
+
+			$query = $this->db->getQuery(true)
+				->select($this->db->quoteName('items.id'))
+				->from($this->config->getTableItems('items'))
+				->where($this->db->quoteName('items.id') . RL_DB::in($ids));
+		}
+
+		/* <<< [PRO] <<< */
+
 		return $query;
 	}
 
@@ -126,7 +150,7 @@ class Collection extends CollectionObject
 		);
 	}
 
-	protected function getDataQuery($ids = [])
+	protected function getDataQuery($ids = [], $prefix = 'items')
 	{
 		if (empty($ids))
 		{
@@ -136,10 +160,10 @@ class Collection extends CollectionObject
 		$selects = $this->config->getSelects();
 
 		$query = $this->db->getQuery(true)
-			->select('items.id')
-			->from($this->config->getTableItems('items'))
-			->where($this->db->quoteName('items.id') . RL_DB::in($ids))
-			->group($this->db->quoteName('items.id'));
+			->select($prefix . '.id')
+			->from($this->config->getTableItems($prefix))
+			->where($this->db->quoteName($prefix . '.id') . RL_DB::in($ids))
+			->group($this->db->quoteName($prefix . '.id'));
 
 		if ($selects['frontpage'])
 		{
@@ -147,7 +171,7 @@ class Collection extends CollectionObject
 				$this->db->quoteName('frontpage.ordering', 'featured-ordering'),
 			])
 				->join('LEFT', $this->config->getTableFeatured('frontpage')
-					. ' ON ' . $this->db->quoteName('frontpage.content_id') . ' = ' . $this->db->quoteName('items.id'));
+					. ' ON ' . $this->db->quoteName('frontpage.content_id') . ' = ' . $this->db->quoteName($prefix . '.id'));
 		}
 
 		if ($selects['categories'])
@@ -161,7 +185,7 @@ class Collection extends CollectionObject
 				//$this->db->quoteName('categories.metadata', 'category-metadata'),
 			])
 				->join('LEFT', $this->config->getTableCategories('categories')
-					. ' ON ' . $this->db->quoteName('categories.id') . ' = ' . $this->db->quoteName('items.catid'));
+					. ' ON ' . $this->db->quoteName('categories.id') . ' = ' . $this->db->quoteName($prefix . '.catid'));
 		}
 
 		if ($selects['users'])
@@ -172,7 +196,7 @@ class Collection extends CollectionObject
 				$this->db->quoteName('user.username', 'author-username'),
 			])
 				->join('LEFT', $this->db->quoteName('#__users', 'user')
-					. ' ON ' . $this->db->quoteName('user.id') . ' = ' . $this->db->quoteName('items.created_by'));
+					. ' ON ' . $this->db->quoteName('user.id') . ' = ' . $this->db->quoteName($prefix . '.created_by'));
 		}
 
 		if ($selects['modifiers'])
@@ -183,7 +207,7 @@ class Collection extends CollectionObject
 				$this->db->quoteName('modifier.username', 'modifier-username'),
 			])
 				->join('LEFT', $this->db->quoteName('#__users', 'modifier')
-					. ' ON ' . $this->db->quoteName('modifier.id') . ' = ' . $this->db->quoteName('items.modified_by'));
+					. ' ON ' . $this->db->quoteName('modifier.id') . ' = ' . $this->db->quoteName($prefix . '.modified_by'));
 		}
 
 		if ($selects['custom_fields'])
@@ -194,7 +218,7 @@ class Collection extends CollectionObject
 
 				$query->select($this->db->quoteName($table_as . '.value', 'custom_field_' . $custom_field->name))
 					->join('LEFT', $this->config->getTableFieldsValues($table_as)
-						. "\n" . ' ON ' . $this->db->quoteName($table_as . '.item_id') . ' = ' . $this->db->quoteName('items.id')
+						. "\n" . ' ON ' . $this->db->quoteName($table_as . '.item_id') . ' = ' . $this->db->quoteName($prefix . '.id')
 						. "\n" . ' AND ' . $this->db->quoteName($table_as . '.field_id') . ' = ' . $this->db->quote($custom_field->id));
 			}
 		}

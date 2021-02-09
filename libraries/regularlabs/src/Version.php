@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -177,7 +177,7 @@ class Version
 
 		if ( ! $is_pro)
 		{
-			$msg .= ' <a href="https://www.regularlabs.com/purchase?ext=' . $alias . '" target="_blank" class="btn btn-large btn-primary">'
+			$msg .= ' <a href="https://www.regularlabs.com/purchase/cart/add/' . $alias . '" target="_blank" class="btn btn-large btn-primary">'
 				. '<span class="icon-basket"></span> '
 				. JText::_('RL_GO_PRO')
 				. '</a>';
@@ -241,7 +241,7 @@ class Version
 			var RLEM_TOKEN = '" . JSession::getFormToken() . "';
 		"
 		);
-		Document::script('regularlabsmanager/script.min.js', '20.3.22179');
+		Document::script('regularlabsmanager/script.min.js', '20.11.4202');
 
 		$url = 'https://download.regularlabs.com?ext=' . $alias . '&j=3';
 

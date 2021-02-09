@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -13,6 +13,7 @@ namespace RegularLabs\Plugin\System\ArticlesAnywhere\Collection\Fields;
 
 defined('_JEXEC') or die;
 
+use RegularLabs\Library\ArrayHelper as RL_Array;
 use RegularLabs\Library\DB as RL_DB;
 use RegularLabs\Plugin\System\ArticlesAnywhere\Collection\DB;
 use RegularLabs\Plugin\System\ArticlesAnywhere\CurrentArticle;
@@ -75,7 +76,7 @@ class CustomFields extends Fields
 			return false;
 		}
 
-		return $this->getFieldValueFromDatabase($field->id, $item_id);
+		return $this->getFieldValueFromDatabase($field, $item_id);
 	}
 
 	public function getFieldByKey($key, $item_id = 0)
@@ -90,19 +91,113 @@ class CustomFields extends Fields
 		return $this->getFieldFromDatabase($field->id, $item_id);
 	}
 
-	protected function getFieldValueFromDatabase($field_id, $item_id)
+	protected function getFieldValueFromDatabase($field, $item_id)
 	{
 		if ( ! RL_DB::tableExists($this->config->getTableFieldsValues(false)))
 		{
 			return false;
 		}
 
-		if (empty($field_id))
+		if (empty($field->id))
 		{
 			return false;
 		}
 
-		return $this->getFieldValuesFromDatabase($field_id, $item_id);
+		$values = $this->getFieldValuesFromDatabase($field->id, $item_id);
+
+		self::applyOrdering($values, $field);
+
+		return $values;
+	}
+
+	protected function applyOrdering(&$values, $field)
+	{
+		if (empty($values))
+		{
+			return;
+		}
+
+		// if value is a json string, don't try to apply ordering
+		if (is_string($values) && $values[0] == '{')
+		{
+			return;
+		}
+
+		if (empty($field->fieldparams))
+		{
+			return;
+		}
+
+		$fieldparams = json_decode($field->fieldparams);
+
+		// check if field type = articles and apply ordering based on database query
+		if ($field->type == 'articles')
+		{
+			self::applyOrderingFromArticlesField($values, $fieldparams);
+		}
+
+		// check if field contains options (in fieldparams) and order based on those values
+		if ( ! empty($fieldparams->options))
+		{
+			self::applyOrderingFromFieldOptions($values, $fieldparams->options);
+		}
+	}
+
+	protected function applyOrderingFromArticlesField(&$values, $fieldparams)
+	{
+		if ( ! is_file(JPATH_PLUGINS . '/fields/articles/helper.php'))
+		{
+			return;
+		}
+
+		require_once JPATH_PLUGINS . '/fields/articles/helper.php';
+
+		if ( ! method_exists('\PlgFieldsArticlesHelper', 'getFullOrdering'))
+		{
+			return;
+		}
+
+		$primary_ordering    = ! empty($fieldparams->articles_ordering) ? $fieldparams->articles_ordering : 'title';
+		$primary_direction   = ! empty($fieldparams->articles_ordering_direction) ? $fieldparams->articles_ordering_direction : 'ASC';
+		$secondary_ordering  = ! empty($fieldparams->articles_ordering_2) ? $fieldparams->articles_ordering_2 : 'created';
+		$secondary_direction = ! empty($fieldparams->articles_ordering_direction_2) ? $fieldparams->articles_ordering_direction_2 : 'DESC';
+
+		$ordering = \PlgFieldsArticlesHelper::getFullOrdering($primary_ordering, $primary_direction, $secondary_ordering, $secondary_direction);
+
+		$query = $this->db->getQuery(true)
+			->from($this->db->quoteName('#__content', 'a'))
+			->select('a.id')
+			->where($this->db->quoteName('a.id') . RL_DB::in($values))
+			->join('LEFT', $this->db->quoteName('#__categories', 'c') . ' ON c.id = a.catid')
+			->order($ordering);
+
+		$this->db->setQuery($query);
+
+		$values = $this->db->loadColumn();
+	}
+
+	protected function applyOrderingFromFieldOptions(&$values, $options)
+	{
+		$ordered = [];
+
+		$values = RL_Array::toArray($values);
+
+		foreach ($options as $option)
+		{
+			if ( ! isset($option->value))
+			{
+				continue;
+			}
+
+			if ( ! in_array($option->value, $values))
+			{
+				continue;
+			}
+
+			$ordered[] = $option->value;
+		}
+
+		$values = $ordered;
 	}
 
 	protected function getFieldType($field_id)
@@ -139,7 +234,11 @@ class CustomFields extends Fields
 
 		$values = $this->getFieldValuesFromDatabase($field_id, $item_id);
 
-		if (empty($values))
+		self::applyOrdering($values, $field);
+
+		if ((is_string($values) && $values == '')
+			|| ( ! is_string($values) && empty($values))
+		)
 		{
 			$field->value = $field->default;
 
@@ -213,6 +312,7 @@ class CustomFields extends Fields
 			->from($this->config->getTableFieldsValues('values'))
 			->where($this->config->get('fields_values_id') . ' = ' . (int) $field_id)
 			->where($this->config->get('fields_values_item_id') . ' = ' . (int) $item_id);
+
 		$this->db->setQuery($query);
 
 		$result = DB::getResults($query);

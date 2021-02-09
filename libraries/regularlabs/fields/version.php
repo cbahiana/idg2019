@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -45,19 +45,18 @@ class JFormFieldRL_Version extends \RegularLabs\Library\Field
 			{
 				$xml = 'administrator/modules/' . $this->form->getValue('element') . '/' . $this->form->getValue('element') . '.xml';
 			}
-			if ( ! JFile::exists(JPATH_SITE . '/' . $xml))
+			if ( ! file_exists(JPATH_SITE . '/' . $xml))
 			{
 				return '';
 			}
 		}
 
-		if ( ! strlen($extension) || ! strlen($xml))
+		if (empty($extension) || empty($xml))
 		{
 			return '';
 		}
 
-		$authorise = JFactory::getUser()->authorise('core.manage', 'com_installer');
-		if ( ! $authorise)
+		if ( ! JFactory::getUser()->authorise('core.manage', 'com_installer'))
 		{
 			return '';
 		}

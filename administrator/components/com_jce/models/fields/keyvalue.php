@@ -75,7 +75,7 @@ class JFormFieldKeyValue extends JFormField
 
         foreach ($values as $value) {
             $str[] = '<div class="form-field-repeatable-item wf-keyvalue">';
-            $str[] = '  <div class="form-field-repeatable-item-group well well-small p-2 bg-light">';
+            $str[] = '  <div class="form-field-repeatable-item-group well well-small p-4 bg-light">';
 
             $n = 0;
 
@@ -97,7 +97,7 @@ class JFormFieldKeyValue extends JFormField
                 // reset name
                 $field->name = $name;
 
-                $str[] = $field->renderField();
+                $str[] = $field->renderField(array('description' => $field->description));
                 
                 $n++;
             }

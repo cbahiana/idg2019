@@ -139,6 +139,8 @@ class WFJoomlaFileSystem extends WFFileSystem
             $path = substr($path, strlen($base));
         }
 
+        $path = WFUtility::cleanPath($path);
+
         return ltrim($path, '/');
     }
 
@@ -282,14 +284,14 @@ class WFJoomlaFileSystem extends WFFileSystem
                     'name' => $name,
                     'writable' => is_writable($item) || $this->isFtp(),
                     'type' => 'folders',
-                    'properties' => $this->getFileDetails($id),
+                    'properties' => $this->getFolderDetails($id),
                 );
 
                 $folders[] = $data;
             }
         }
 
-        if ($sort) {
+        if ($sort && strpos($sort, 'extension') === false) {
             $folders = self::sortItemsByKey($folders, $sort);
         }
 
@@ -339,6 +341,9 @@ class WFJoomlaFileSystem extends WFFileSystem
                     $id = WFUtility::convertEncoding($id);
                     $name = $id;
                 }
+
+                // get basename of file name
+                $name = WFUtility::mb_basename($name);
 
                 // create url
                 $url = WFUtility::makePath($this->getRootDir(), $id, '/');

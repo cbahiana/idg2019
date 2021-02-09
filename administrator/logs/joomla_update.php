@@ -119,3 +119,13 @@
 2019-09-26T17:53:17+00:00	INFO 2801:86:a000:256:e14d:d3ad:c852:7303	update	Deleting removed files and folders.
 2019-09-26T17:53:18+00:00	INFO 2801:86:a000:256:e14d:d3ad:c852:7303	update	Cleaning up after installation.
 2019-09-26T17:53:18+00:00	INFO 2801:86:a000:256:e14d:d3ad:c852:7303	update	Update to version 3.9.12 is complete.
+2021-02-09T12:56:58+00:00	INFO ::1	update	Atualização iniciada pelo usuário Super User (690). Versão antiga é 3.9.18.
+2021-02-09T12:57:02+00:00	INFO ::1	update	Baixando arquivo de atualização de https://s3-us-west-2.amazonaws.com/joomla-official-downloads/joomladownloads/joomla3/Joomla_3.9.24-Stable-Update_Package.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6LXDJLNUINX2AVMH%2F20210209%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210209T125656Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&X-Amz-Signature=56cc43b667afdf444c2d3682750fb27bbdb5bca1ce6a6edd8cf19a999c4a4bdd.
+2021-02-09T12:57:12+00:00	INFO ::1	update	Arquivo Joomla_3.9.24-Stable-Update_Package.zip baixado com sucesso.
+2021-02-09T12:57:12+00:00	INFO ::1	update	Iniciando a instalação da nova versão.
+2021-02-09T12:57:15+00:00	INFO ::1	update	Finalizando instalação.
+2021-02-09T12:57:15+00:00	INFO ::1	update	Executou a consulta do arquivo 3.9.21-2020-08-02. Texto da consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2021-02-09T12:57:15+00:00	INFO ::1	update	Executou a consulta do arquivo 3.9.22-2020-09-16. Texto da consulta: INSERT INTO `#__postinstall_messages` (`extension_id`, `title_key`, `description.
+2021-02-09T12:57:15+00:00	INFO ::1	update	Excluindo arquivos e pastas removidas.
+2021-02-09T12:57:16+00:00	INFO ::1	update	Limpeza pós-instalação.
+2021-02-09T12:57:16+00:00	INFO ::1	update	A atualização para a versão 3.9.24 está completa.

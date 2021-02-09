@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -77,7 +77,8 @@ class Replace
 
 		if ($replace)
 		{
-			self::process($string);
+			$strip_html = $area == 'head' && $params->strip_html_in_head;
+			self::process($string, $strip_html);
 		}
 
 		RL_Protect::unprotect($string);
@@ -130,7 +131,7 @@ class Replace
 		return true;
 	}
 
-	public static function process(&$full_string)
+	public static function process(&$full_string, $strip_html = false)
 	{
 		list($start_tags, $end_tags) = Params::getTags();
 
@@ -157,7 +158,7 @@ class Replace
 			&& ! empty($tags)
 		)
 		{
-			self::replaceTagsInString($string, $tags);
+			self::replaceTagsInString($string, $tags, $strip_html);
 
 			$tags = $pluginTags->get($string);
 		}
@@ -165,12 +166,17 @@ class Replace
 		$full_string = $pre_string . $string . $post_string;
 	}
 
-	private static function replaceTagsInString(&$string, $tags)
+	private static function replaceTagsInString(&$string, $tags, $strip_html = false)
 	{
 		/** @var PluginTag $tag */
 		foreach ($tags as $tag)
 		{
 			$output = self::$message ? Protect::getMessageCommentTag(self::$message) : $tag->getOutput();
+
+			if ($strip_html)
+			{
+				$output = RL_Html::removeHtmlTags($output, true);
+			}
 
 			$string = RL_String::replaceOnce($tag->getOriginalString(), $output, $string);
 		}

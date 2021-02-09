@@ -4,7 +4,7 @@
  * @package     GWE Systems
  * @subpackage  System.Gwejson
  *
- * @copyright   Copyright (C)  2015 GWE Systems Ltd. All rights reserved.
+ * @copyright   Copyright (C)  2015 - 2020 GWE Systems Ltd. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 defined('JPATH_BASE') or die;
@@ -69,8 +69,7 @@ class PlgSystemGwejson extends JPlugin
 			$file = "gwejson_".$file;
 		}
 
-		$path = $input->getCmd('path', 'site');
-		if (empty($path)) {$path = 'site';} // Additional check, we have had some systems returning empty values on jinput instead of the default value.
+		$path = $input->get('path', 'site', 'cmd');
 		$paths = array("site" => JPATH_SITE, "admin" => JPATH_ADMINISTRATOR, "plugin" => JPATH_SITE . "/plugins", "module" => JPATH_SITE . "/modules", "library" => JPATH_LIBRARIES);
 		if (!in_array($path, array_keys($paths)))
 		{

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -10,6 +10,12 @@
  */
 
 defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory as JFactory;
+use Joomla\CMS\Filesystem\File as JFile;
+use Joomla\CMS\Filesystem\Folder as JFolder;
+use Joomla\CMS\Installer\Installer as JInstaller;
+use Joomla\CMS\Language\Text as JText;
 
 class PlgSystemRegularLabsInstallerScriptHelper
 {
@@ -32,7 +38,7 @@ class PlgSystemRegularLabsInstallerScriptHelper
 		$this->db      = JFactory::getDbo();
 	}
 
-	public function preflight($route, JAdapterInstance $adapter)
+	public function preflight($route, $adapter)
 	{
 		if ( ! in_array($route, ['install', 'update']))
 		{
@@ -42,7 +48,6 @@ class PlgSystemRegularLabsInstallerScriptHelper
 		JFactory::getLanguage()->load('plg_system_regularlabsinstaller', JPATH_PLUGINS . '/system/regularlabsinstaller');
 
 		$this->installed_version = $this->getVersion($this->getInstalledXMLFile());
-
 
 		if ($this->show_message && $this->isInstalled())
 		{
@@ -57,7 +62,7 @@ class PlgSystemRegularLabsInstallerScriptHelper
 		return true;
 	}
 
-	public function postflight($route, JAdapterInstance $adapter)
+	public function postflight($route, $adapter)
 	{
 		$this->removeGlobalLanguageFiles();
 		$this->removeUnusedLanguageFiles();
@@ -105,8 +110,9 @@ class PlgSystemRegularLabsInstallerScriptHelper
 			->select($this->db->quoteName('extension_id'))
 			->from('#__extensions')
 			->where($this->db->quoteName('type') . ' = ' . $this->db->quote($this->extension_type))
-			->where($this->db->quoteName('element') . ' = ' . $this->db->quote($this->getElementName()));
-		$this->db->setQuery($query, 0, 1);
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote($this->getElementName()))
+			->setLimit(1);
+		$this->db->setQuery($query);
 		$result = $this->db->loadResult();
 
 		return empty($result) ? false : true;
@@ -239,7 +245,7 @@ class PlgSystemRegularLabsInstallerScriptHelper
 				JText::sprintf(
 					'COM_INSTALLER_UNINSTALL_SUCCESS',
 					JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($type))
-				)
+				), 'success'
 			);
 		}
 	}
@@ -316,8 +322,9 @@ class PlgSystemRegularLabsInstallerScriptHelper
 		$query->clear()
 			->select($this->db->quoteName('moduleid'))
 			->from('#__modules_menu')
-			->where($this->db->quoteName('moduleid') . ' = ' . (int) $id);
-		$this->db->setQuery($query, 0, 1);
+			->where($this->db->quoteName('moduleid') . ' = ' . (int) $id)
+			->setLimit(1);
+		$this->db->setQuery($query);
 		$exists = $this->db->loadResult();
 
 		if ($exists)
@@ -363,7 +370,7 @@ class PlgSystemRegularLabsInstallerScriptHelper
 				'<strong>' . JText::_($this->name) . '</strong>',
 				'<strong>' . $this->getVersion() . '</strong>',
 				$this->getFullType()
-			)
+			), 'success'
 		);
 	}
 
@@ -421,7 +428,7 @@ class PlgSystemRegularLabsInstallerScriptHelper
 			return '';
 		}
 
-		$xml = JApplicationHelper::parseXMLInstallFile($file);
+		$xml = JInstaller::parseXMLInstallFile($file);
 
 		if ( ! $xml || ! isset($xml['version']))
 		{
@@ -558,18 +565,22 @@ class PlgSystemRegularLabsInstallerScriptHelper
 		$query = $this->db->getQuery(true)
 			->select($this->db->quoteName('rules'))
 			->from('#__assets')
-			->where($this->db->quoteName('title') . ' = ' . $this->db->quote('com_' . $this->extname));
-		$this->db->setQuery($query, 0, 1);
+			->where($this->db->quoteName('title') . ' = ' . $this->db->quote('com_' . $this->extname))
+			->setLimit(1);
+		$this->db->setQuery($query);
 		$rules = $this->db->loadResult();
 
 		$rules = json_decode($rules);
 
-		if(empty($rules)) {
+		if (empty($rules))
+		{
 			return;
 		}
 
-		foreach($rules as $key => $value) {
-			if(!empty($value)) {
+		foreach ($rules as $key => $value)
+		{
+			if ( ! empty($value))
+			{
 				continue;
 			}
 
@@ -577,7 +588,6 @@ class PlgSystemRegularLabsInstallerScriptHelper
 		}
 
 		$rules = json_encode($rules);
-
 
 		$query = $this->db->getQuery(true)
 			->update($this->db->quoteName('#__assets'))
@@ -629,8 +639,9 @@ class PlgSystemRegularLabsInstallerScriptHelper
 			->select($this->db->quoteName('id'))
 			->from('#__assets')
 			->where($this->db->quoteName('name') . ' = ' . $this->db->quote('com_modules.module.' . (int) $module_id))
-			->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('NoNumber%'));
-		$this->db->setQuery($query, 0, 1);
+			->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('NoNumber%'))
+			->setLimit(1);
+		$this->db->setQuery($query);
 		$asset_id = $this->db->loadResult();
 
 		if (empty($asset_id))
@@ -723,8 +734,9 @@ class PlgSystemRegularLabsInstallerScriptHelper
 			->from('#__update_sites')
 			->where($this->db->quoteName('location') . ' LIKE ' . $this->db->quote('%download.regularlabs.com%'))
 			->where($this->db->quoteName('location') . ' LIKE ' . $this->db->quote('%e=' . $this->alias . '%'))
-			->where($this->db->quoteName('location') . ' NOT LIKE ' . $this->db->quote('%pro=1%'));
-		$this->db->setQuery($query, 0, 1);
+			->where($this->db->quoteName('location') . ' NOT LIKE ' . $this->db->quote('%pro=1%'))
+			->setLimit(1);
+		$this->db->setQuery($query);
 		$id = $this->db->loadResult();
 
 		// Otherwise just get the first match
@@ -852,13 +864,18 @@ class PlgSystemRegularLabsInstallerScriptHelper
 			return;
 		}
 
+		if ( ! is_file(__DIR__ . '/language'))
+		{
+			return;
+		}
+
 		$installed_languages = array_merge(
-			JFolder::folders(JPATH_SITE . '/language'),
-			JFolder::folders(JPATH_ADMINISTRATOR . '/language')
+			is_file(JPATH_SITE . '/language') ? JFolder::folders(JPATH_SITE . '/language') : [],
+			is_file(JPATH_ADMINISTRATOR . '/language') ? JFolder::folders(JPATH_ADMINISTRATOR . '/language') : []
 		);
 
 		$languages = array_diff(
-			JFolder::folders(__DIR__ . '/language'),
+			JFolder::folders(__DIR__ . '/language') ?: [],
 			$installed_languages
 		);
 

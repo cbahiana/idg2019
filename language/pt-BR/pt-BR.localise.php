@@ -2,8 +2,8 @@
 /**
  * @package    Joomla.Language
  *
- * @copyright Copyright (C) 2005 - 2020 Open Source Matters, Inc. Todos os direitos reservados.
- * @license  Pública Geral GNU - versão 2 ou posterior; ver ficheiro LICENSE.txt
+ * @copyright Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
@@ -32,11 +32,11 @@ abstract class Pt_BRLocalise
 		}
 		elseif ($count == 1)
 		{
-			return array('1');
+			return array('ONE', '1');
 		}
 		else
 		{
-			return array('MORE');
+			return array('OTHER', 'MORE');
 		}
 	}
 

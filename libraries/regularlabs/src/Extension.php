@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -377,16 +377,17 @@ class Extension
 			if ( ! empty($folder))
 			{
 				$files[] = JPATH_PLUGINS . '/' . $folder . '/' . $element . '/' . $element . '.xml';
-				$files[] = JPATH_PLUGINS . '/' . $folder . '/' . $element . '.xml';
 			}
 
 			// System Plugins
 			$files[] = JPATH_PLUGINS . '/system/' . $element . '/' . $element . '.xml';
-			$files[] = JPATH_PLUGINS . '/system/' . $element . '.xml';
 
 			// Editor Button Plugins
 			$files[] = JPATH_PLUGINS . '/editors-xtd/' . $element . '/' . $element . '.xml';
-			$files[] = JPATH_PLUGINS . '/editors-xtd/' . $element . '.xml';
+
+			// Field Plugins
+			$field_name = RegEx::replace('field$', '', $element);
+			$files[]    = JPATH_PLUGINS . '/fields/' . $field_name . '/' . $field_name . '.xml';
 		}
 
 		// Modules
@@ -480,5 +481,113 @@ class Extension
 		$db->setQuery($query);
 
 		return $db->loadObject();
+	}
+
+	public static function disable($alias, $type = 'plugin', $folder = 'system')
+	{
+		$element = self::getElementByAlias($alias);
+
+		switch ($type)
+		{
+			case 'module':
+				$element = 'mod_' . $element;
+				break;
+
+			case 'component':
+				$element = 'com_' . $element;
+				break;
+		}
+
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true)
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('enabled') . ' = 0')
+			->where($db->quoteName('element') . ' = ' . $db->quote($element))
+			->where($db->quoteName('type') . ' = ' . $db->quote($type));
+
+		if ($type == 'plugin')
+		{
+			$query->where($db->quoteName('folder') . ' = ' . $db->quote($folder));
+		}
+
+		$db->setQuery($query);
+		$db->execute();
+	}
+
+	public static function orderPluginFirst($name, $folder = 'system')
+	{
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true)
+			->select(['e.ordering'])
+			->from($db->quoteName('#__extensions', 'e'))
+			->where('e.type = ' . $db->quote('plugin'))
+			->where('e.folder = ' . $db->quote($folder))
+			->where('e.element = ' . $db->quote($name));
+		$db->setQuery($query);
+
+		$current_ordering = $db->loadResult();
+
+		if ($current_ordering == '')
+		{
+			return;
+		}
+
+		$query = $db->getQuery(true)
+			->select('e.ordering')
+			->from($db->quoteName('#__extensions', 'e'))
+			->where('e.type = ' . $db->quote('plugin'))
+			->where('e.folder = ' . $db->quote($folder))
+			->where('e.manifest_cache LIKE ' . $db->quote('%"author":"Regular Labs%'))
+			->where('e.element != ' . $db->quote($name))
+			->order('e.ordering ASC');
+		$db->setQuery($query);
+
+		$min_ordering = $db->loadResult();
+
+		if ($min_ordering == '')
+		{
+			return;
+		}
+
+		if ($current_ordering < $min_ordering)
+		{
+			return;
+		}
+
+		if ($min_ordering < 1 || $current_ordering == $min_ordering)
+		{
+			$new_ordering = max($min_ordering, 1);
+
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('ordering') . ' = ' . $new_ordering)
+				->where($db->quoteName('ordering') . ' = ' . $min_ordering)
+				->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+				->where($db->quoteName('folder') . ' = ' . $db->quote($folder))
+				->where($db->quoteName('element') . ' != ' . $db->quote($name))
+				->where($db->quoteName('manifest_cache') . ' LIKE ' . $db->quote('%"author":"Regular Labs%'));
+			$db->setQuery($query);
+			$db->execute();
+
+			$min_ordering = $new_ordering;
+		}
+
+		if ($current_ordering == $min_ordering)
+		{
+			return;
+		}
+
+		$new_ordering = $min_ordering - 1;
+
+		$query = $db->getQuery(true)
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('ordering') . ' = ' . $new_ordering)
+			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+			->where($db->quoteName('folder') . ' = ' . $db->quote($folder))
+			->where($db->quoteName('element') . ' = ' . $db->quote($name));
+		$db->setQuery($query);
+		$db->execute();
 	}
 }

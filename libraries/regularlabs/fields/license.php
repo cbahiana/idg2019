@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -33,11 +33,18 @@ class JFormFieldRL_License extends \RegularLabs\Library\Field
 	{
 		$extension = $this->get('extension');
 
-		if ( ! strlen($extension))
+		if (empty($extension))
 		{
 			return '';
 		}
 
-		return '</div><div class="hide">' . RL_License::getMessage($extension, true);
+		$message = RL_License::getMessage($extension, true);
+
+		if (empty($message))
+		{
+			return '';
+		}
+
+		return '</div><div>' . $message;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -58,15 +58,26 @@ class Filter extends CollectionObject implements FilterInterface
 		return;
 	}
 
-	protected function setFiltersFromNames(JDatabaseQuery &$query, $table, $names = [])
+	protected function setFiltersFromNames(JDatabaseQuery &$query, $table, $names = [], $use_id_if_numeric = true)
 	{
-		$keys             = [
+		$keys = [
 			$this->config->getTitle($table, false, $table),
 			$this->config->getAlias($table, false, $table),
 		];
-		$keys_if_nummeric = [
-			$this->config->getId($table, false, $table),
-		];
+
+		$keys_if_nummeric = [];
+
+		switch ($use_id_if_numeric)
+		{
+			case 'also':
+				$keys_if_nummeric[] = $this->config->getAlias($table, false, $table);
+				$keys_if_nummeric[] = $this->config->getId($table, false, $table);
+				break;
+
+			case true;
+				$keys_if_nummeric[] = $this->config->getId($table, false, $table);
+				break;
+		}
 
 		$conditions = $this->getConditionsFromValues($keys, $names, $keys_if_nummeric);
 
@@ -184,39 +195,68 @@ class Filter extends CollectionObject implements FilterInterface
 			return $this->db->quoteName($key) . RL_DB::like($operator . $value);
 		}
 
-//		$temp = $value;
-//		if ($where = $this->getWhereIfDateValue($key, $temp, $operator))
-//		{
-//			echo "\n==========================\n";
-//			print_r($value);
-//			echo "\n--------------------------\n";
-//			print_r($temp);
-//			echo "\n--------------------------\n";
-//			print_r($where);
-//			echo "\n==========================\n";
-//		}
-
 		if ($where = $this->getWhereIfDateValue($key, $value, $operator))
 		{
 			return $where;
 		}
 
-		// Special case for if value is possibly a year or year-month format
-		if (RL_RegEx::match('^[0-9]{4}(?<month>-[0-9]{2})?$', $value, $match))
+		$query = $this->db->quoteName($key) . RL_DB::in($operator . $value, true);;
+
+		if ( ! $this->isPotentialYearMonth($key, $value))
 		{
-			$format = isset($match['month']) ? '%Y-%m' : '%Y';
-			$regex  = '^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}:[0-9]{2})?$';
-			$select = 'DATE_FORMAT(' . $this->db->quoteName($key) . ',' . $this->db->quote($format) . ')';
-
-			$if   = ' YEAR(' . $this->db->quoteName($key) . ')'
-				. ' AND ' . $this->db->quoteName($key) . ' REGEXP ' . $this->db->quote($regex);
-			$then = $select . RL_DB::in($operator . $value, true);
-			$else = $this->db->quoteName($key) . RL_DB::in($operator . $value, true);
-
-			return '(CASE WHEN ' . $if . ' THEN ' . $then . ' ELSE ' . $else . ' END)';
+			return $query;
 		}
 
-		return $this->db->quoteName($key) . RL_DB::in($operator . $value, true);
+		RL_RegEx::match('^[0-9]{4}(?<month>-[0-9]{2})?$', $value, $match);
+
+		// Special case for if value is possibly a year or year-month format
+		$format = isset($match['month']) ? '%Y-%m' : '%Y';
+		$regex  = '^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{1,2}:[0-9]{2}:[0-9]{2})?$';
+		$select = 'DATE_FORMAT(' . $this->db->quoteName($key) . ',' . $this->db->quote($format) . ')';
+
+		$if   = ' YEAR(' . $this->db->quoteName($key) . ')'
+			. ' AND ' . $this->db->quoteName($key) . ' REGEXP ' . $this->db->quote($regex);
+		$then = $select . RL_DB::in($operator . $value, true);
+		$else = $query;
+
+		return '(CASE WHEN ' . $if . ' THEN ' . $then . ' ELSE ' . $else . ' END)';
+	}
+
+	public function isPotentialYearMonth($key, $value)
+	{
+		// Check if value is possibly a year or year-month format
+		if ( ! RL_RegEx::match('^[0-9]{4}(?:-[0-9]{2})?$', $value))
+		{
+			return false;
+		}
+
+		$key_parts = explode('.', $key);
+		$key_name  = array_pop($key_parts);
+
+		// not a date if it is one of these columns
+		$no_date_keys = [
+			'id',
+			'title',
+			'alias',
+			'state',
+			'parent',
+			'ordering',
+			'access',
+			'language',
+		];
+
+		if (in_array($key_name, $no_date_keys))
+		{
+			return false;
+		}
+
+		// not a date if the key ends in '_id'
+		if (RL_RegEx::match('_id$', $key_name))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	public function getWhereIfDateValue($key, &$value, $operator)
@@ -278,7 +318,7 @@ class Filter extends CollectionObject implements FilterInterface
 	{
 		if (strpos($value, ' to ') !== false)
 		{
-			$value = explode(' to ', $value, 2);
+			$value    = explode(' to ', $value, 2);
 			$value[0] = RL_RegEx::replace('^from ', '', $value[0]);
 
 			list($from, $ignore) = $this->getFromAndToDates($value[0]);

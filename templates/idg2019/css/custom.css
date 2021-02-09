@@ -1,3 +1,220 @@
+/* Código de personalização */
+.bannergroup_tabela, .bannergroup_tabela_linha {display:table;width:100%;}
+.bannergroup_tabela_linha {padding-bottom:20px;border-bottom:solid 2px #105480;}
+.bannergroup_tabela .banneritem, .bannergroup_tabela_linha .banneritem {display:table-cell;text-align:center;}
+.bannergroup_tabela .banneritem:first-child, .bannergroup_tabela_linha .banneritem:first-child {text-align:left;}
+.bannergroup_tabela .banneritem:last-child, .bannergroup_tabela_linha .banneritem:last-child {text-align:right;}
+.bannergroup_inline {text-align:justify;}
+.bannergroup_inline .banneritem {display:inline-block;}
+#navigation h2 {cursor:pointer;}
+main #navigation nav {margin-bottom:15px!important;}
+main div.container .module h2 {margin-bottom:10px;}
+.escondido, .menu_escondido {display:none;visibility:hidden;}
+.fale-conosco h3.title {display:none;visibility:hidden;}
+#content.internas ul.mod_docman_icons li.module_document {list-style:none;list-style-type:none;}
+.finderportal-searchbox > form.form-search {margin: 22px 0 0 0;}
+.finderportal-searchbox > form.form-search > input.search-query {border-radius: 4px 0 0 4px;width: 175px;border-right: none !important;}
+.finderportal-searchbox > form.form-search > .btn-primary {padding-bottom: 4px;padding-right: 8px;background: #fff;border-left: none!important;margin-left:-3px;}
+.finderportal-searchbox > form.form-search > .btn-primary > i{color: #3e67b1;-webkit-text-stroke-width: .4px;-webkit-text-stroke-color: #3e67b1;}
+@media(max-width:767px){
+  .bannergroup_tabela, .bannergroup_tabela_linha {display:block;}
+  .bannergroup_tabela .banneritem, .bannergroup_tabela_linha .banneritem {display:inline-block;}
+  main .container #navigation #navigation-section nav h2 {font-size:1em;}
+  #content.internas h1, #content.internas .documentFirstHeading {font-size:1.7em;line-height:30px;}
+}
+#content.internas h2, 
+#content.internas h3, 
+#content.internas h4, 
+#content.internas h5, 
+#content.internas h6 {
+  font-size:1.3em;
+  color:#333;
+  margin-top:1em;
+  margin-bottom:0.1em;
+}
+
+/* Docman */
+.k-ui-namespace .k-pagination .k-pagination__pages {
+	display:flex;
+	}
+ul.k-pagination__pages,
+ul.k-pagination__pages li,
+#content.internas ul.k-pagination__pages,
+#content.internas ul.k-pagination__pages li {
+	list-style:none;
+	list-style-type:none;
+	}
+
+/* INT na Mídia */
+body.pagina-intnamidia  span.hits-label {
+  display:inline-block;
+  padding:3px 10px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-color:#f89406;
+  background-image: linear-gradient(to bottom, #f9a517, #f89406);
+  color:#FFF;
+}
+
+body.pagina-intnamidia  .k-ui-namespace .docman_document_details > span::before {
+  content:"";
+}
+body.pagina-intnamidia .k-ui-namespace .docman_download {
+	width:180px;
+	min-width:150px;
+	max-width:200px;
+	padding:0px;
+	margin: 10px 20px 0 0;
+	float:left;
+}
+body.pagina-intnamidia .k-ui-namespace .docman_download a.btn {
+	color:#FFF;
+	background-color: #51a351;
+	background-image: linear-gradient(to bottom, #62c462, #51a351);
+}
+body.pagina-intnamidia #content.internas p {
+  line-height:unset;
+  margin:unset;
+}
+body.pagina-intnamidia .k-ui-namespace .docman_download .btn-large {
+  padding: 5px 10px;
+}
+body.pagina-intnamidia .k-ui-namespace .docman_download a.btn span {
+	display:inline;
+	}
+body.pagina-intnamidia .mod_docman .docman_description div {
+  display: flex;  
+}
+body.pagina-intnamidia .mod_docman .docman_description div p {
+  margin-right:20px;
+}
+
+body.pagina-sem-cat-items div.cat-items {
+  display:none;
+  visibility:hidden;
+}
+body.pagina-sem-cat-items #content.internas .borderHeading {
+  color:unset;
+  border-bottom:unset;
+}
+
+/* Soluções Tecnológicas */
+body.pagina-solucoes-tecnologicas .koowa_media {
+  display:flex;
+  flex-direction: column;
+}
+body.pagina-solucoes-tecnologicas .koowa_media .koowa_media__item,
+body.pagina-solucoes-tecnologicas .k-ui-namespace .mod_docman .koowa_media--gallery .koowa_media_contents.columns-4 .koowa_media__item {
+  width:unset;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .koowa_media_wrapper--documents .koowa_media__item {
+  text-align: unset;
+  width:unset;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .mod_docman .koowa_media--gallery .koowa_media__item__link,
+body.pagina-solucoes-tecnologicas .k-ui-namespace .koowa_media--gallery .koowa_media__item__link {
+  padding:0;
+  width:unset;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .mod_docman .koowa_media--gallery .koowa_media__item__content,
+body.pagina-solucoes-tecnologicas .k-ui-namespace .koowa_media--gallery .koowa_media__item__content {
+  background: unset;
+  border: unset;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .mod_docman .koowa_media__item__content-holder {
+  display: flex;
+  flex-direction: row-reverse;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .mod_docman .koowa_media_wrapper--documents .koowa_media__item__label {
+  width:300px;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .koowa_media--gallery .koowa_media__item__thumbnail {
+  min-width:unset;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .mod_docman .koowa_media--gallery .koowa_media__item__thumbnail {
+  width:50px;
+}
+body.pagina-solucoes-tecnologicas .k-ui-namespace .koowa_header{
+  width:unset;
+}
+
+/* Revista Inovativa */
+.k-ui-namespace .koowa_media--gallery .koowa_media__item {
+  width:250px;
+}
+
+body.pagina-edicoes-inovativa .k-ui-namespace .koowa_media--gallery .koowa_media__item:before{content:" "; display:block;min-height:1.1em;}
+body.pagina-edicoes-inovativa .k-ui-namespace .koowa_media--gallery .atual:before{content:"Edição Atual";}
+body.pagina-edicoes-inovativa .k-ui-namespace .koowa_media--gallery .anteriores:before{content:"Edições Anteriores >>";}
+.k-ui-namespace .koowa_media_wrapper--documents {visibility:visible;}
+main .docman_description {margin:5px 0 5px 30px;}
+main .k-ui-namespace .koowa_media--gallery .koowa_media__item img {max-width:100px;}
+.k-ui-namespace .docman_category a.docman_thumbnail {
+	float:right;
+}
+body.pagina-inovativa .k-ui-namespace .docman_thumbnail {
+  float:none;
+}
+#content .inovativa a.docman_thumbnail {
+  max-width:35%;
+}
+#content .inovativa .docman_description h3,
+#content .inovativa .docman_description h4,
+#content .inovativa .docman_description h5,
+#content .inovativa .docman_description h6 {
+	font-size:97%;
+	margin-bottom:0;
+}
+body.pagina-inovativa form.k-js-grid-controller::before {
+	display:block;
+	margin:20px 0 10px;
+	font-size: 1.6em;
+	font-weight: 700;
+	content:"Artigos";
+}
+body.pagina-inovativa div.category-listinovativa div.cat-items {
+  visibility:hidden;
+  display:none;
+}
+body.pagina-inovativa #content.internas div.item-pageinovativa span.documentCategory,
+body.pagina-inovativa #content.internas h1.borderHeading,
+body.pagina-inovativa #content.internas div.item-pageinovativa h1.documentFirstHeading {
+  font-family:inherit;
+  color: #1a2a39;
+}
+body.pagina-inovativa #content.internas div.item-pageinovativa span.documentCategory,
+body.pagina-inovativa #content.internas h1.borderHeading,
+body.pagina-inovativa #content.internas h1.docman_page_heading {
+  border-bottom: 1px solid #e8e7e7;
+  text-transform: uppercase;
+  font-size: 2em;
+  padding-bottom:5px;
+  margin: 25px 0 10px!important;
+}
+body.pagina-inovativa #content.internas div.item-pageinovativa h1.documentFirstHeading,
+body.pagina-inovativa #content.internas div.bloginovativa > h2.secondaryHeading {
+	line-height: 1.25em;
+	font-weight: 700;
+	text-transform: none;
+	font-size: 1.6em;
+}
+body.pagina-inovativa #content.internas.documentByLine span7,
+body.pagina-inovativa .row-fluid [class*="span"] {
+  min-height:0;
+}
+
+img {
+  max-width:97%;
+}
+#content .carousel-inner .banneritem img {
+  width:100%;
+  max-width:100%;
+}
+.article-index h3 {
+  display:none;
+}
+/* Originais do IDG2019 */
 .cards {
 	margin-bottom:10px;
 }

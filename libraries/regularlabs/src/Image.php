@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -190,7 +190,7 @@ class Image
 			return $source;
 		}
 
-		$clean_source = ltrim(str_replace(JUri::root(), '', $source), '/');
+		$clean_source = self::cleanPath($source);
 		$source_path  = JPATH_SITE . '/' . $clean_source;
 
 		$destination_folder = ltrim($destination_folder ?: File::getDirName($clean_source));
@@ -206,6 +206,11 @@ class Image
 		}
 
 		if ( ! $width && ! $height)
+		{
+			return $source;
+		}
+
+		if ( ! getimagesize($source_path))
 		{
 			return $source;
 		}
@@ -253,10 +258,15 @@ class Image
 			return false;
 		}
 
-		$clean_source = ltrim(str_replace(JUri::root(), '', $source), '/');
+		$clean_source = self::cleanPath($source);
 		$source_path  = JPATH_SITE . '/' . $clean_source;
 
 		if ( ! file_exists($source_path))
+		{
+			return false;
+		}
+
+		if ( ! getimagesize($source_path))
 		{
 			return false;
 		}
@@ -302,7 +312,10 @@ class Image
 
 	public static function cleanPath($source)
 	{
-		return ltrim(str_replace(JUri::root(), '', $source), '/');
+		$source = ltrim(str_replace(JUri::root(), '', $source), '/');
+		$source = strtok($source, '?');
+
+		return $source;
 	}
 
 	public static function getWidth($source)
@@ -321,12 +334,19 @@ class Image
 
 	public static function getDimensions($source)
 	{
+		$empty = (object) [
+			'width'  => 0,
+			'height' => 0,
+		];
+
 		if (File::isExternal($source))
 		{
-			return (object) [
-				'width'  => 0,
-				'height' => 0,
-			];
+			return $empty;
+		}
+
+		if ( ! getimagesize($source))
+		{
+			return $empty;
 		}
 
 		try
@@ -335,10 +355,7 @@ class Image
 		}
 		catch (\InvalidArgumentException $e)
 		{
-			return (object) [
-				'width'  => 0,
-				'height' => 0,
-			];
+			return $empty;
 		}
 
 		return (object) [

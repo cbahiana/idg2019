@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -44,7 +44,9 @@ class DB
 			$limit = 9999;
 		}
 
-		$db->setQuery($query, $offset, $limit);
+		$query->setLimit($limit, $offset);
+
+		$db->setQuery($query);
 
 		$result = call_user_func_array([$db, $method], $arguments);
 

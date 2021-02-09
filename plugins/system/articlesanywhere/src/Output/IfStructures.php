@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -13,6 +13,7 @@ namespace RegularLabs\Plugin\System\ArticlesAnywhere\Output;
 
 defined('_JEXEC') or die;
 
+use RegularLabs\Library\ArrayHelper as RL_Array;
 use RegularLabs\Library\Condition\Php;
 use RegularLabs\Library\RegEx as RL_RegEx;
 use RegularLabs\Library\StringHelper as RL_String;
@@ -156,6 +157,52 @@ class IfStructures extends OutputObject
 			}
 
 			return $this->passArray($key, $value, $reverse);
+		}
+
+		/*
+		* In array syntax
+		* foo IN ['bar', 'baz']
+		* foo NOT IN ['bar', 'baz']
+		*/
+		if (RL_RegEx::match('^(?<key>[a-zA-Z0-9-_\:]+)\s+(?<operator>(?:NOT\s+)?\!?IN)\s+\[(?<val>[^\]]*)\]$', $condition, $match))
+		{
+			$key         = $this->values->get($match['key'], null, (object) ['output' => 'raw']);
+			$orig_values = RL_Array::toArray($match['val']);
+
+			$reverse = ($match['operator'] == 'NOT IN' || $match['operator'] == '!NOT');
+
+			$values = [];
+			foreach ($orig_values as $value)
+			{
+				if (empty($value))
+				{
+					continue;
+				}
+
+				if ($value[0] == '"' || $value[0] == "'")
+				{
+					$values[] = trim($value, '\'"');
+					continue;
+				}
+
+				$value = $this->values->get($value, $value, (object) ['output' => 'raw']);
+				if ( ! is_array($value))
+				{
+					$value = [$value];
+				}
+
+				$values = array_merge($values, $value);
+			}
+
+			foreach ($values as $value)
+			{
+				if ($this->passArray($key, $value))
+				{
+					return ! $reverse;
+				}
+			}
+
+			return $reverse;
 		}
 
 		/*

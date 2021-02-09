@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -138,8 +138,10 @@ class Output
 		return $content;
 	}
 
-	private static function protectNestedTagContent(&$string)
+	public static function protectNestedTagContent(&$string)
 	{
+		self::protectIgnoreTags($string);
+
 		$pluginTags = new PluginTags;
 		$tags       = $pluginTags->get($string);
 
@@ -177,6 +179,31 @@ class Output
 
 			$string = RL_String::replaceOnce($tag->getOriginalString(), $full_tag, $string);
 		}
+
+		self::removeIgnoreTags($string);
+	}
+
+	public static function protectIgnoreTags(&$string)
+	{
+		list($tag_start, $tag_end) = Params::getTagCharacters();
+		$tag_start = RL_RegEx::quote($tag_start);
+		$tag_end   = RL_RegEx::quote($tag_end);
+
+		if ( ! RL_String::contains($string, $tag_start . 'ignore' . $tag_end))
+		{
+			return;
+		}
+
+		RL_Protect::protectByRegex(
+			$string,
+			$tag_start . 'ignore' . $tag_end . '.*?' . $tag_start . '/ignore' . $tag_end
+		);
+	}
+
+	private static function removeIgnoreTags(&$string)
+	{
+		list($tag_start, $tag_end) = Params::getTagCharacters();
+		RL_Protect::removePluginTags($string, ['ignore'], $tag_start, $tag_end);
 	}
 
 	private static function fixBrokenHtmlTags($string)

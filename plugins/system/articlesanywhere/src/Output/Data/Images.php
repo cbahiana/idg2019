@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -17,7 +17,6 @@ use ContentHelperRoute;
 use Joomla\CMS\Layout\LayoutHelper as JLayoutHelper;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel as JModel;
 use Joomla\CMS\Router\Route as JRoute;
-use Joomla\CMS\Uri\Uri as JUri;
 use RegularLabs\Library\ArrayHelper as RL_Array;
 use RegularLabs\Library\File as RL_File;
 use RegularLabs\Library\HtmlTag as RL_HtmlTag;

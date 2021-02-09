@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -188,6 +188,7 @@ class PluginTag
 
 		return (object) [
 			'component'        => 'default',
+			'type'             => $this->getTagType(),
 			'limit'            => 1,
 			'offset'           => 0,
 			'ignores'          => [],

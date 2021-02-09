@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         20.3.22179
+ * @version         20.11.4202
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -125,6 +125,18 @@ class DB
 
 	public static function prepareValue($value, $handle_now = false)
 	{
+		if (is_array($value))
+		{
+			$array = $value;
+
+			foreach ($array as &$array_value)
+			{
+				$array_value = self::prepareValue($array_value, $handle_now);
+			}
+
+			return $array;
+		}
+
 		$dates = ['now', 'now()', 'date()', 'jfactory::getdate()'];
 
 		if ($handle_now && ! is_array($value) && in_array(strtolower($value), $dates))
@@ -132,7 +144,7 @@ class DB
 			return 'NOW()';
 		}
 
-		if (is_numeric($value))
+		if (is_int($value) || ctype_digit($value))
 		{
 			return $value;
 		}

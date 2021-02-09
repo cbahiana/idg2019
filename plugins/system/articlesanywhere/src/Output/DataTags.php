@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Articles Anywhere
- * @version         10.1.4
+ * @version         10.5.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://www.regularlabs.com
@@ -31,8 +31,10 @@ class DataTags extends OutputObject
 		list($data_tag_start, $data_tag_end) = Params::getDataTagCharacters();
 		$spaces = RL_PluginTag::getRegexSpaces();
 
+		$inside_tag = RL_PluginTag::getRegexInsideTag($data_tag_start, $data_tag_end);
+
 		$regex_datatags = RL_RegEx::quote($data_tag_start)
-			. '(?<type>/?[a-z][a-z0-9-_\:\+\/\*]*)(?:' . $spaces . '(?<attributes>.*?))?'
+			. '(?<type>/?[a-z][a-z0-9-_\:\+\/\*]*)(?:' . $spaces . '(?<attributes>' . $inside_tag . '))?'
 			. RL_RegEx::quote($data_tag_end);
 
 		RL_RegEx::matchAll($regex_datatags, $content, $matches);
@@ -63,7 +65,11 @@ class DataTags extends OutputObject
 				continue;
 			}
 
+			Output::protectNestedTagContent($content);
+
 			$content = $this->replaceMatch($match, $value, $content);
+
+			Output::unprotectNestedTagContent($content);
 
 			if (RL_RegEx::match($regex_plugintags, $content))
 			{
@@ -112,6 +118,36 @@ class DataTags extends OutputObject
 
 	private function replaceMatch($match, $value, $content)
 	{
+		if (strpos($match['type'], 'previous:') === 0)
+		{
+			$previous = $this->numbers->get('has_previous') ? $this->numbers->get('previous_no_pagination') : 0;
+
+			$value = $previous
+				? str_replace(
+					'previous:',
+					$previous . ':',
+					$match['0']
+				)
+				: '';
+
+			return RL_String::replaceOnce($match[0], $value, $content);
+		}
+
+		if (strpos($match['type'], 'next:') === 0)
+		{
+			$next = $this->numbers->get('has_next') ? $this->numbers->get('next_no_pagination') : 0;
+
+			$value = $next
+				? str_replace(
+					'next:',
+					$next . ':',
+					$match['0']
+				)
+				: '';
+
+			return RL_String::replaceOnce($match[0], $value, $content);
+		}
+
 		// Replace random-type data tags only once
 		if (strpos($match['type'], 'random') !== false)
 		{
