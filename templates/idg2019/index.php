@@ -65,7 +65,7 @@ $active_item = TmplIdg2019Helper::getActiveItemid();
 		<script type="text/javascript" src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script>
 		<script type="text/javascript" src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/script-portal.js"></script>
 		<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+		<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 		<!-- JS -->
 
 		<!-- CSS -->
@@ -76,7 +76,7 @@ $active_item = TmplIdg2019Helper::getActiveItemid();
 		<!-- <link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template-<?php echo $this->params->get('cor', 'azul'); ?>.css" type='text/css'/> -->
 		<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<link rel="stylesheet" href="//unpkg.com/swiper/css/swiper.css">
-		<link rel="stylesheet" href="//unpkg.com/swiper/css/swiper.min.css">
+		<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 		<!-- CSS -->  
 	</head>
@@ -346,9 +346,6 @@ $active_item = TmplIdg2019Helper::getActiveItemid();
 	    <jdoc:include type="modules" name="debug" />
 	    <?php TmplIdg2019Helper::debug( @$preffix, @$active_item); ?>
 
-
-	    <script src="//unpkg.com/swiper/js/swiper.js"></script>
-        <script src="//unpkg.com/swiper/js/swiper.min.js"></script>
 		<script src="//kit.fontawesome.com/d330af0e88.js" crossorigin="anonymous"></script>
 
 		<script>
